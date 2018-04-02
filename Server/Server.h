@@ -1,7 +1,7 @@
 /*
  * Server.h
  *
- *  Created on: 1 апр. 2018 г.
+ *  Created on: 29 мар. 2018 г.
  *      Author: jenny
  */
 
@@ -9,15 +9,19 @@
 #define SERVER_H_
 
 #include <string>
-#include "Protocol.h"
+#include "Server_activity.h"
+#include "../Protocol/Protocol.h"
 
 using namespace std;
 
+enum Protocol_num{
+	M_UDP_NUM = 0,
+	M_TCP_NUM = 1
+};
+
 class Server {
-	Protocol* protocol;
+	Protocol* p_udp, *p_tcp;
 	bool is_run;
-	unsigned long result;
-	unsigned int countEuclid(unsigned int a, unsigned int b);
 public:
 	Server();
 	virtual ~Server();
@@ -31,10 +35,8 @@ public:
 	void Accept();
 	void Disconnect();
 
-	int Send(unsigned long answer);
-	int Recv(unsigned int* num);
-
-	unsigned long Count(unsigned int num);
+	int Send(string answer, Protocol_num protocol_num);
+	int Recv(string* message, Protocol_num protocol_num);
 };
 
 #endif /* SERVER_H_ */

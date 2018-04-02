@@ -1,21 +1,19 @@
 /*
  * Server.cpp
  *
- *  Created on: 1 апр. 2018 г.
+ *  Created on: 29 мар. 2018 г.
  *      Author: jenny
  */
 
 #include "Server.h"
-
-#include "Server.h"
 #include <iostream>
 
-Server::Server(): is_run(true), result(1){
-	protocol = new Protocol();
-}
+Server::Server(): p_udp(NULL), p_tcp(NULL), is_run(true){}
 
 Server::~Server() {
-	delete protocol;
+	delete p_udp;
+	delete p_tcp;
+	return;
 }
 
 void Server::Start(){
@@ -35,46 +33,50 @@ bool Server::IsRunning(){
 }
 
 void Server::Socket(){
-	protocol->Socket();
+	p_udp = new UDP();
+	p_tcp = new TCP();
+	return;
 }
 
 void Server::Bind(){
-	protocol->Bind();
+	p_udp->Bind();
+	p_tcp->Bind();
 }
 
 void Server::Listen(){
-	protocol->Listen();
+	p_tcp->Listen();
+	return;
 }
 
 void Server::Accept(){
-	protocol->Accept();
+	p_tcp->Accept();
 }
 
 void Server::Disconnect(){
-	protocol->ServerDisconnect();
+	p_tcp->ServerDisconnect();
+	return;
 }
 
 
-int Server::Send(unsigned long answer){
-	return protocol->ServerSend(answer);
+int Server::Send(string answer, Protocol_num protocol_num){
+	switch(protocol_num){
+	case M_TCP_NUM:
+		return p_tcp->ServerSend(answer);
+	case M_UDP_NUM:
+		return p_udp->ServerSend(answer);
+	}
+	return 0;
 }
 
-int Server::Recv(unsigned int* num){
-	return protocol->ServerRecv(num);
+int Server::Recv(string* message, Protocol_num protocol_num){
+	switch(protocol_num){
+	case M_TCP_NUM:
+		return p_tcp->ServerRecv(message);
+	case M_UDP_NUM:
+		return p_udp->ServerRecv(message);
+	}
+	return 0;
 }
 
-unsigned long Server::Count(unsigned int num){
-	if (!result || !num)
-		return result = 0;
-	unsigned int maxDivider = countEuclid(num, result);
-	return result *= num / maxDivider;
-}
-
-unsigned int Server::countEuclid(unsigned int a, unsigned int b){
-	unsigned int max = a > b ? a : b;
-	unsigned int min = a > b ? b : a;
-	if (!min) return max;
-	return countEuclid(max - min, min);
-}
 
 

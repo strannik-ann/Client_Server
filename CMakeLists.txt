@@ -34,6 +34,8 @@ set(SERVER_SRCROOT ${PROJECT_SOURCE_DIR}/Server)
 
 add_library(Server
 	${SERVER_SRCROOT}/Server.cpp
+	${SERVER_SRCROOT}/Server_activity.cpp
+
 )
 
 target_include_directories(Server

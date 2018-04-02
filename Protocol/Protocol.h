@@ -25,7 +25,9 @@ using namespace std;
 #define M_INET_ADDR "127.0.0.1"
 
 enum default_const{
-	M_TCP_PORT = 5600,
+	M_TCP_PORT = 1100,
+	M_UDP_PORT = 5800,
+	M_MESSAGE_LEN = 2048
 };
 
 class Protocol {
@@ -38,22 +40,51 @@ public:
 	virtual ~Protocol();
 
 	//Client functions
-	int Connect();
-	int ClientSend(unsigned int num);
-	int ClientRecv(unsigned long* answer);
+	virtual int Connect();
+	virtual int ClientSend(string message) = 0;
+	virtual int ClientRecv(string* answer) = 0;
 
-	void ClientDisconnect();
+	//Client-server
+	virtual void ClientDisconnect(){};
+	virtual void ServerDisconnect(){};
 
 	//Server functions
-	void Socket();
 	void Bind();
+	virtual void Listen(){};
+	virtual int Accept(){return 0;};
+
+	virtual int ServerSend(string answer) = 0;
+	virtual int ServerRecv(string* message) = 0;
+
+};
+
+class UDP : public Protocol {
+public:
+	UDP();
+	virtual ~UDP();
+
+	int ClientSend(string message);
+	int ClientRecv(string* answer);
+
+	int ServerSend(string answer);
+	int ServerRecv(string* message);
+};
+
+class TCP : public Protocol {
+public:
+	TCP();
+	virtual ~TCP();
+
+	int Connect();
+	int ClientSend(string message);
+	int ClientRecv(string* answer);
+	void ClientDisconnect();
+	void ServerDisconnect();
+
 	void Listen();
 	int Accept();
-
-	int ServerSend(unsigned long answer);
-	int ServerRecv(unsigned int* num);
-
-	void ServerDisconnect();
+	int ServerSend(string answer);
+	int ServerRecv(string* message);
 };
 
 #endif /* PROTOCOL_H_ */
